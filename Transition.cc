@@ -11,6 +11,11 @@
 
 /*class Transition{
 public:*/
+	StateNode* Transition::accept(){
+		throw(1);
+	}
+
+
 	bool Transition::checkAccept(event e){
 		return e == triggerEvent && guard();
 	}

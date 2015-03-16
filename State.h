@@ -9,13 +9,18 @@
 #define STATE_H_
 
 #include "common.h"
-//#include "Transition.h"
+#include "Transition.h"
+#include<cstdlib>
 
 class StateNode{
 public:
-		void entry();
-		void exit();
-		StateNode* accept(event e);
+		virtual void entry(){
+		}
+		virtual void exit(){
+		}
+		virtual StateNode* accept(event e) { 
+			return (StateNode*) 0; 
+		}
 		state is_in();
 protected:
 	state currentState;
@@ -28,7 +33,7 @@ public:
 	void exit();
 	StateNode* accept(event e);
 private:
-	//Transition* transition;
+	Transition* tran;
 };
 
 #endif /* STATE_H_ */

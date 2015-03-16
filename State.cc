@@ -20,9 +20,6 @@ public:
 protected:
 	state currentState;
 };*/
-StateNode* StateNode::accept(event e){
-
-}
 state StateNode::is_in(){
 	return currentState;
 }
@@ -32,7 +29,7 @@ state StateNode::is_in(){
 public:*/
 	State1::State1(){
 		Tran1 tran;
-		//State1::transition = &tran;
+		State1::tran = &tran;
 	}
 	void State1::entry(){
 		std::cout << "Hello! Welcome to State One!" << std::endl;
@@ -41,12 +38,14 @@ public:*/
 		std::cout << "Leaving State One!" << std::endl;
 	}
 	StateNode* State1::accept(event e){
-		/*if(transition.checkAccept(e)){
+		std::cout << "Checking for event" << std::endl;
+		if(State1::tran->checkAccept(e)){
 			exit();
-			return transition.accept();
+			StateNode* returnTran = State1::tran->accept();
+			return returnTran;
 		}
-		else{*/
+		else{
 			return this;
-		//}
+		}
 	}
 //};

@@ -4,12 +4,18 @@
 typedef enum {E, B, C} event;
 typedef enum {STATE1, STATE2} state;
 
+class StateNode;
+	class State1;
+class Transition;
+	class Tran1;
+	class DefaultTransition;
+
 class Transition{
 public:
 	bool checkAccept(event e){
 		return e == triggerEvent && guard();
 	}
-	virtual void accept() = 0;
+	virtual StateNode* accept() = 0;
 
 protected:
 	event triggerEvent;
@@ -17,16 +23,6 @@ protected:
 
 	}
 };
-
-
-class Tran1 : public Transition{
-public:
-	Tran1(){
-		Transition::triggerEvent = E;
-	}
-protected:
-};
-
 
 class StateNode{
 public:
@@ -40,6 +36,22 @@ protected:
 	state currentState;
 };
 
+class Tran1 : public Transition{
+public:
+	Tran1(){
+		Transition::triggerEvent = E;
+	}
+	StateNode* accept(){
+		StateNode* returnState;
+		State1 state;
+		returnState = &state;
+		return returnState;
+	}
+protected:
+};
+
+
+
 
 class State1 : public StateNode{
 public:
@@ -50,14 +62,14 @@ public:
 		std::cout << "Leaving State One!" << std::endl;
 	}
 	StateNode* accept(event e){
-		if(transition->checkAccept(e)){
+		if(transition.checkAccept(e)){
 			exit();
-			return transition->accept();
+			return transition.accept();
 		}
 
 	}
 protected:
-	Tran1* transition;
+	Tran1 transition;
 
 };
 
@@ -69,10 +81,12 @@ public:
 	bool checkAccept(event e){
 		return true;
 	}
-	void accept(){
+	StateNode* accept(){
+		StateNode* returnState;
 		State1 state;
-		state->entry();
-		return state;
+		state.entry();
+		returnState = &state;
+		return returnState;
 	}
 };
 
@@ -80,20 +94,25 @@ public:
 class StateWalker{
 public:
 	StateWalker(){
-		currentState = defaultTransition->accept();
+		currentState = defaultTransition.accept();
 	}
 	void accept(event e){
-		currentState = accept(e);
+		currentState = currentState->accept(e);
 	}
 	StateNode *currentState;
 protected:
-	DefaultTran *defaultTransition;
+	DefaultTran defaultTransition;
 };
 
 int main(int argc, char *argv[]) {
 	std::cout << "Welcome to my statemachine" << std::endl;
-	for(;;){
+	StateWalker skyWalker;
+	
+	skyWalker.accept(E);
+	
 
-	}
+	//for(;;){
+
+	//}
 	return EXIT_SUCCESS;
 }

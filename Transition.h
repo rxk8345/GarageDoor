@@ -11,7 +11,10 @@
 #define TRANSITION_H_
 
 #include "common.h"
-#include "State.h"
+
+//#include "State.h"
+
+class StateNode;
 
 class Transition{
 public:
