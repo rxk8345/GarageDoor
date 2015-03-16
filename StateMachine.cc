@@ -23,7 +23,6 @@ protected:
 int main(int argc, char *argv[]) {
 	std::cout << "Welcome to my statemachine" << std::endl;
 	StateWalker skyWalker;
-	
 	skyWalker.accept(E);
 	
 

@@ -11,9 +11,6 @@
 
 /*class Transition{
 public:*/
-	StateNode* Transition::accept(){
-		throw(1);
-	}
 
 
 	bool Transition::checkAccept(event e){
@@ -34,8 +31,10 @@ public:*/
 		Transition::triggerEvent = E;
 	}
 	StateNode* Tran1::accept(){
+		std::cout << "accepting transistion" << std::endl;
 		StateNode* returnState;
 		State1 state;
+		state.entry();
 		returnState = &state;
 		return returnState;
 	}

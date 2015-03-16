@@ -40,8 +40,12 @@ public:*/
 	StateNode* State1::accept(event e){
 		std::cout << "Checking for event" << std::endl;
 		if(State1::tran->checkAccept(e)){
+
 			exit();
+			std::cout << "Accepted" << std::endl;
 			StateNode* returnTran = State1::tran->accept();
+			//State1::tran->checkAccept(e);
+			std::cout << "Accepted" << std::endl;
 			return returnTran;
 		}
 		else{

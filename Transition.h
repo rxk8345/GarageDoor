@@ -11,6 +11,7 @@
 #define TRANSITION_H_
 
 #include "common.h"
+#include<iostream>
 
 //#include "State.h"
 
@@ -19,7 +20,10 @@ class StateNode;
 class Transition{
 public:
 	bool checkAccept(event e);
-	StateNode* accept();
+	virtual StateNode* accept(){
+		std::cout << "I should never run" << std::endl;
+		return (StateNode*) 0;
+	}
 
 protected:
 	event triggerEvent;
@@ -29,9 +33,7 @@ protected:
 class Tran1 : public Transition{
 public:
 	Tran1();
-	bool checkAccept(event e);
 	StateNode* accept();
-
 protected:
 	bool guard();
 };
@@ -41,7 +43,6 @@ public:
 	DefaultTran();
 	bool checkAccept(event e);
 	StateNode* accept();
-
 protected:
 	bool guard();
 };
