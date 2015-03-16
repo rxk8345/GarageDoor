@@ -15,13 +15,14 @@ class State1;
 //*****************DefaultTran*******
 
 bool DefaultTran::checkAccept(event e){
-	return true;
+	return false;
 }
 StateNode* DefaultTran::accept(){
-
 	StateNode* returnState;
-	State1 state;
+	State1 state;//The initial state
 	returnState = &state;
+
+	//Action lists happen here
 
 	returnState->entry();
 

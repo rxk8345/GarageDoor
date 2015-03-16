@@ -35,4 +35,58 @@ public:
 	StateNode* accept();
 };
 
+
+class TranBPFromSO : public Transition{//Button Press from Stopped Closing State
+public:
+	bool checkAccept(event e);
+	StateNode* accept();
+};
+
+class TranOCFFromO : public Transition{//Overcurrent Fault from Opening State
+public:
+	bool checkAccept(event e);
+	StateNode* accept();
+};
+
+class TranFCFromO : public Transition{//Fully Closed from Opening
+public:
+	bool checkAccept(event e);
+	StateNode* accept();
+};
+
+class TranBPFFromO : public Transition{//Button Press from Opening
+public:
+	bool checkAccept(event e);
+	StateNode* accept();
+};
+
+class TranBPFFromSC : public Transition{//Button Press from Stopped Closing
+public:
+	bool checkAccept(event e);
+	StateNode* accept();
+};
+
+class TranOCFFromC : public Transition{//Overcurrent Fault from Closing
+public:
+	bool checkAccept(event e);
+	StateNode* accept();
+};
+
+class TranIRFFromC : public Transition{//IRFault from Closing
+public:
+	bool checkAccept(event e);
+	StateNode* accept();
+};
+
+class TranBPFromC : public Transition{//Button Press from Closing
+public:
+	bool checkAccept(event e);
+	StateNode* accept();
+};
+class TranFCFromC : public Transition{//Fully Closed from Closing
+public:
+	bool checkAccept(event e);
+	StateNode* accept();
+};
+
 #endif /* TRANSITION_H_ */

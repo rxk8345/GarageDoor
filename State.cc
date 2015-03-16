@@ -24,8 +24,10 @@ StateNode* State1::accept(event e){
 		return tran.accept();
 	}
 	else{
-		State1 newMe;
-		return &newMe;
+		StateNode* returnState;
+		State1 state;
+		returnState = &state;
+		return returnState;
 	}
 
 }
@@ -42,5 +44,77 @@ void State2::exit(){
 
 StateNode* State2::accept(event e){
 	std::cout << "Attempting to accept an event in State 2" << std::endl;
-	return (StateNode*) 0;
+	StateNode* returnState;
+	State2 state;
+	returnState = &state;
+	return returnState;
+}
+
+//***************StoppedOpening**************
+void StoppedOpening::entry(){
+	std::cout << "Entering State 2" << std::endl;
+}
+
+void StoppedOpening::exit(){
+	std::cout << "Exiting State 2" << std::endl;
+}
+
+StateNode* StoppedOpening::accept(event e){
+	std::cout << "Attempting to accept an event in State 2" << std::endl;
+	StateNode* returnState;
+	StoppedOpening state;
+	returnState = &state;
+	return returnState;
+}
+
+
+//***************Opening**************
+void Opening::entry(){
+	std::cout << "Entering State 2" << std::endl;
+}
+
+void Opening::exit(){
+	std::cout << "Exiting State 2" << std::endl;
+}
+
+StateNode* Opening::accept(event e){
+	std::cout << "Attempting to accept an event in State 2" << std::endl;
+	StateNode* returnState;
+	Opening state;
+	returnState = &state;
+	return returnState;
+}
+
+//***************StoppedClosing**************
+void StoppedClosing::entry(){
+	std::cout << "Entering State 2" << std::endl;
+}
+
+void StoppedClosing::exit(){
+	std::cout << "Exiting State 2" << std::endl;
+}
+
+StateNode* StoppedClosing::accept(event e){
+	std::cout << "Attempting to accept an event in State 2" << std::endl;
+	StateNode* returnState;
+	StoppedClosing state;
+	returnState = &state;
+	return returnState;
+}
+
+//***************Closing**************
+void Closing::entry(){
+	std::cout << "Entering State 2" << std::endl;
+}
+
+void Closing::exit(){
+	std::cout << "Exiting State 2" << std::endl;
+}
+
+StateNode* Closing::accept(event e){
+	std::cout << "Attempting to accept an event in State 2" << std::endl;
+	StateNode* returnState;
+	Closing state;
+	returnState = &state;
+	return returnState;
 }

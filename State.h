@@ -10,6 +10,8 @@
 
 #include "common.h"
 
+class Transistion;
+
 //**********Prototype*************
 
 class StateNode{
@@ -37,5 +39,36 @@ public:
 	void exit();
 	StateNode* accept(event e);
 };
+
+class StoppedOpening : public StateNode{
+public:
+	void entry();
+	void exit();
+	StateNode* accept(event e);
+};
+
+class Opening : public StateNode{
+public:
+	void entry();
+	void exit();
+	StateNode* accept(event e);
+};
+
+class StoppedClosing : public StateNode{
+public:
+	void entry();
+	void exit();
+	StateNode* accept(event e);
+};
+
+class Closing : public StateNode{
+public:
+	void entry();
+	void exit();
+	StateNode* accept(event e);
+};
+
+
+
 
 #endif /* STATE_H_ */
