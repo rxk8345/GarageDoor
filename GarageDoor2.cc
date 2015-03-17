@@ -21,18 +21,15 @@
 #include "common.h"
 
 //*****************Messaging Code
+//Defines some things for the messaging system
 #define CHANNELNAME "frontdoor"
-
 typedef struct _pulse msg_header_t;
-
-
 typedef struct{
-	msg_header_t hdr ;		// standard QNX header
+	msg_header_t hdr ;
 	event triggeredEvent;
 }Message;
 
-//*****************End of Messaging Code
-
+//*****************State Walker Class Definition
 class StateWalker{
 public:
 	StateNode *currentState;
@@ -53,17 +50,18 @@ protected:
 StateWalker skyWalker;
 
 
-//*****************Polling Code
-
-void* ClientThread(void* args){
-	std::cout << "Client has started\n" << std::endl;
+//*****************Polling Thread
+//The polling thread listens for input type events and sends them to the state machine controller thread(main)
+void* PollingThread(void* args){
+	//Seting up the channel to send events to
+	std::cout << "Polling Thread has started\n" << std::endl;
 	Message sendingMessage;
 	Message replyMessage;
 	sendingMessage.hdr.type = 0 ;
 	sendingMessage.hdr.subtype = 0 ;
-	sendingMessage.triggeredEvent = BP;//This is where you send the event that you trigger
+	sendingMessage.triggeredEvent = BP;
 	int connectionID = name_open( CHANNELNAME, 0 ) ;
-	sleep(1);
+	sleep(1);//ensure that the server channel has been created before we continue
 
 	char inChar;
 	for(;;){
@@ -81,14 +79,23 @@ void* ClientThread(void* args){
 		}
 
 		MsgSend( connectionID, &sendingMessage, sizeof(sendingMessage), &replyMessage, sizeof(replyMessage) );
+		//send the message to the State Machine Controller
 	}
+	return 0;
 }
 
-//*****************End of Polling Code
-
-//*****************Start of Door Timing Thread
+/*****************Door Timing Thread
+ * this thread checks the state of the state machine and handles generating the Fully Open and
+ * Fully closed events at appropriate times. If the door has been closing for 3 seconds, and it
+ * it is switched to the opening state, it will take 3 seconds for the Fully Open State to be
+ * generated. The relative position of the door is how this is calculated.
+ *
+ * Every second, this thread polls the state machine for the current state. If the state is opening,
+ * it will increase the count of the relativePosition, if it is closing it will decrease it. When
+ * the count is either 0 or 10, the thread will send a Fully Closed or Fully Open event
+ */
 void* DoorTimerThread(void* args){
-	std::cout << "Hello from Door Timer" << std::endl;
+	std::cout << "Door Timer Thread has Started" << std::endl;
 	Message sendingMessage;
 	Message replyMessage;
 	sendingMessage.hdr.type = 0 ;
@@ -99,40 +106,37 @@ void* DoorTimerThread(void* args){
 	int relativePosition = 0;
 	for(;;){
 		sleep(1);
-		if(skyWalker.is_in() == O){
-			std::cout << "Opening" << std::endl;
+		if(skyWalker.is_in() == O){//If the state machine is in the opening state
 			relativePosition++;
 		}
-		else if(skyWalker.is_in() == C){
-			std::cout << "Closing" << std::endl;
+		else if(skyWalker.is_in() == C){//If the state machine is in the closing state
 			relativePosition--;
 		}
 
-		if(relativePosition == 10){
+		if(relativePosition == 10){//If the relative position is all the way to the top
 			sendingMessage.triggeredEvent = FO;
 			MsgSend( connectionID, &sendingMessage, sizeof(sendingMessage), &replyMessage, sizeof(replyMessage) );
 		}
-		else if(relativePosition == 0){
+		else if(relativePosition == 0){//If the relative position is all the way to the bottom
 			sendingMessage.triggeredEvent = FC;
 			MsgSend( connectionID, &sendingMessage, sizeof(sendingMessage), &replyMessage, sizeof(replyMessage) );
 		}
 
 
 	}
+	return 0;
 }
-//*****************End of Door Timing Thread
 
+int main(int argc, char *argv[]) {
 
-
-int main(int argc, char *argv[]) {//Compilers are stupid and why
-
-	//**************Polling Thread
-	pthread_t Client;
-	Client = pthread_create(&Client, NULL, ClientThread, NULL);
-	if (Client) {
+	//**************Create Polling Thread
+	pthread_t Polling;
+	Polling = pthread_create(&Polling, NULL, PollingThread, NULL);
+	if (Polling) {
 		std::cerr << "Error - pthread_create returned error\n" << std::endl;
 	}
 
+	//*************Create Door Timer Thread
 	pthread_t doorTimer;
 	doorTimer = pthread_create(&doorTimer, NULL, DoorTimerThread , NULL);
 	if (doorTimer) {
@@ -151,58 +155,15 @@ int main(int argc, char *argv[]) {//Compilers are stupid and why
 	channel_id = name_attach( NULL, CHANNELNAME, 0 );
 
 	if ( channel_id )
-				std::cout << "Demo Server is started\n" << std::endl;
+				std::cout << "Event Server is started\n" << std::endl;
 			else
-				std::cout << "Named Channel was not created\n" << std::endl;
+				std::cout << "Event Server was not created\n" << std::endl;
 	//***************Mailbox Main Loop
 
-	std::cout << "Welcome to my Statemachine" << std::endl;
+	std::cout << "System Initialized" << std::endl;
 
 	skyWalker.defaultTran();//Stopped Opening
 
-	/*
-	skyWalker.accept(IR);
-	skyWalker.accept(OC);
-	skyWalker.accept(FO);
-	skyWalker.accept(FC);
-
-	skyWalker.accept(BP);//Opening
-	skyWalker.accept(IR);
-	skyWalker.accept(FC);
-
-	skyWalker.accept(BP);//Stopped Closing
-	skyWalker.accept(IR);
-	skyWalker.accept(FC);
-	skyWalker.accept(FO);
-	skyWalker.accept(OC);
-
-	skyWalker.accept(BP);//Closing
-	skyWalker.accept(FO);
-
-	skyWalker.accept(BP);//Stopped Opening
-
-	//So for some reason when we put a print statement in here and
-	//had all of this uncommented, it segfaulted in skyWalker.accept(),
-	//but without the print it didn't and we are not sure why
-	//All Transitions
-						 //SO
-	skyWalker.accept(BP);//O
-	skyWalker.accept(OC);//SO
-	skyWalker.accept(BP);//O
-	skyWalker.accept(FO);//SC
-	skyWalker.accept(BP);//C
-	skyWalker.accept(OC);//O
-	skyWalker.accept(BP);//SC
-	skyWalker.accept(BP);//C
-	skyWalker.accept(IR);//O
-	skyWalker.accept(BP);//SC
-	skyWalker.accept(BP);//C
-	skyWalker.accept(FC);//SO
-	skyWalker.accept(BP);//O
-	skyWalker.accept(BP);//SC
-	skyWalker.accept(BP);//C
-	skyWalker.accept(BP);//SO
-	*/
 	for(;;){
 			receiveID = MsgReceive(channel_id->chid, &recievedMessage, sizeof(recievedMessage), NULL);
 		    if (recievedMessage.hdr.type == _IO_CONNECT){
@@ -213,7 +174,56 @@ int main(int argc, char *argv[]) {//Compilers are stupid and why
 		    	skyWalker.accept(recievedMessage.triggeredEvent);
 		    }
 	}
+	/*
+	 *
+	 * "Unit" Testing
+	 *
+	 * Try all ignored events
+		skyWalker.accept(IR);
+		skyWalker.accept(OC);
+		skyWalker.accept(FO);
+		skyWalker.accept(FC);
 
-	std::cout << "Made it to the end" << std::endl;
+		skyWalker.accept(BP);//Opening
+		skyWalker.accept(IR);
+		skyWalker.accept(FC);
+
+		skyWalker.accept(BP);//Stopped Closing
+		skyWalker.accept(IR);
+		skyWalker.accept(FC);
+		skyWalker.accept(FO);
+		skyWalker.accept(OC);
+
+		skyWalker.accept(BP);//Closing
+		skyWalker.accept(FO);
+
+		skyWalker.accept(BP);//Stopped Opening
+
+		//So for some reason when we put a print statement in here and
+		//had all of this uncommented, it segfaulted in skyWalker.accept(),
+		//but without the print it didn't and we are not sure why
+
+
+		//Try All Transitions
+							 //SO
+		skyWalker.accept(BP);//O
+		skyWalker.accept(OC);//SO
+		skyWalker.accept(BP);//O
+		skyWalker.accept(FO);//SC
+		skyWalker.accept(BP);//C
+		skyWalker.accept(OC);//O
+		skyWalker.accept(BP);//SC
+		skyWalker.accept(BP);//C
+		skyWalker.accept(IR);//O
+		skyWalker.accept(BP);//SC
+		skyWalker.accept(BP);//C
+		skyWalker.accept(FC);//SO
+		skyWalker.accept(BP);//O
+		skyWalker.accept(BP);//SC
+		skyWalker.accept(BP);//C
+		skyWalker.accept(BP);//SO
+		*/
+
+//	std::cout << "Made it to the end" << std::endl;
 	return EXIT_SUCCESS;
 }

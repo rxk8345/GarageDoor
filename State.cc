@@ -9,14 +9,16 @@
 #include "common.h"
 #include<iostream>
 
+#include "MotorController.h"
+#include "IRController.h"
 
 //***************StoppedOpening**************
 void StoppedOpening::entry(){
-	std::cout << "Entering StoppedOpening" << std::endl;
+	//std::cout << "Entering StoppedOpening" << std::endl;
 }
 
 void StoppedOpening::exitState(){
-	std::cout << "Exiting StoppedOpening" << std::endl;
+	//std::cout << "Exiting StoppedOpening" << std::endl;
 }
 
 StateNode* StoppedOpening::accept(event e){
@@ -37,11 +39,13 @@ StateNode* StoppedOpening::accept(event e){
 
 //***************Opening**************
 void Opening::entry(){
-	std::cout << "Entering Opening" << std::endl;
+	//std::cout << "Entering Opening" << std::endl;
+	motorUp();
 }
 
 void Opening::exitState(){
-	std::cout << "Exiting Opening" << std::endl;
+	//std::cout << "Exiting Opening" << std::endl;
+	motorStop();
 }
 
 StateNode* Opening::accept(event e){
@@ -73,11 +77,11 @@ StateNode* Opening::accept(event e){
 
 //***************StoppedClosing**************
 void StoppedClosing::entry(){
-	std::cout << "Entering StoppedClosing" << std::endl;
+	//std::cout << "Entering StoppedClosing" << std::endl;
 }
 
 void StoppedClosing::exitState(){
-	std::cout << "Exiting StoppedClosing" << std::endl;
+//	std::cout << "Exiting StoppedClosing" << std::endl;
 }
 
 StateNode* StoppedClosing::accept(event e){
@@ -97,11 +101,15 @@ StateNode* StoppedClosing::accept(event e){
 
 //***************Closing**************
 void Closing::entry(){
-	std::cout << "Entering Closing" << std::endl;
+//	std::cout << "Entering Closing" << std::endl;
+	turnIROn();
+	motorDown();
 }
 
 void Closing::exitState(){
-	std::cout << "Exiting Closing" << std::endl;
+//	std::cout << "Exiting Closing" << std::endl;
+	motorStop();
+	turnIROff();
 }
 
 StateNode* Closing::accept(event e){
@@ -109,7 +117,7 @@ StateNode* Closing::accept(event e){
 	TranFCFromC tran2;
 	TranOCFromC tran3;
 	TranBPFromC tran4;
-	//If we had more than three transitions off of a state
+	//If we had more than four transitions off of a state
 	//we would make this into a list and loop through it, however, this is
 	//fine and it compiles and it's simple, so shhhhhh
 	if(tran.checkAccept(e)){
