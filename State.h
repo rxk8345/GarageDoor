@@ -22,6 +22,8 @@ public:
 	}
 	virtual StateNode* accept(event e){
 	}
+	virtual state is_in(){
+	}
 };
 
 //*********Concrete Instantiations******
@@ -31,6 +33,9 @@ public:
 	void entry();
 	void exitState();
 	StateNode* accept(event e);
+	state is_in(){
+		return SO;
+	}
 };
 
 class Opening : public StateNode{
@@ -38,6 +43,9 @@ public:
 	void entry();
 	void exitState();
 	StateNode* accept(event e);
+	state is_in(){
+		return O;
+	}
 };
 
 class StoppedClosing : public StateNode{
@@ -45,6 +53,9 @@ public:
 	void entry();
 	void exitState();
 	StateNode* accept(event e);
+	state is_in(){
+		return SC;
+	}
 };
 
 class Closing : public StateNode{
@@ -52,6 +63,9 @@ public:
 	void entry();
 	void exitState();
 	StateNode* accept(event e);
+	state is_in(){
+		return C;
+	}
 };
 
 

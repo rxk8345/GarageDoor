@@ -6,6 +6,7 @@
  */
 #include "State.h"
 #include "Transition.h"
+#include "common.h"
 #include<iostream>
 
 
