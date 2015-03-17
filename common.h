@@ -8,6 +8,6 @@
 #ifndef COMMON_H_
 #define COMMON_H_
 
-typedef enum {E, B, C} event;
+typedef enum {BP, OC, IR, FC, FO} event;
 
 #endif /* COMMON_H_ */

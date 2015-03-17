@@ -18,7 +18,7 @@ class StateNode{
 public:
 	virtual void entry(){
 	}
-	virtual void exit(){
+	virtual void exitState(){
 	}
 	virtual StateNode* accept(event e){
 	}
@@ -26,45 +26,31 @@ public:
 
 //*********Concrete Instantiations******
 
-class State1 : public StateNode{
-public:
-	void entry();
-	void exit();
-	StateNode* accept(event e);
-};
-
-class State2 : public StateNode{
-public:
-	void entry();
-	void exit();
-	StateNode* accept(event e);
-};
-
 class StoppedOpening : public StateNode{
 public:
 	void entry();
-	void exit();
+	void exitState();
 	StateNode* accept(event e);
 };
 
 class Opening : public StateNode{
 public:
 	void entry();
-	void exit();
+	void exitState();
 	StateNode* accept(event e);
 };
 
 class StoppedClosing : public StateNode{
 public:
 	void entry();
-	void exit();
+	void exitState();
 	StateNode* accept(event e);
 };
 
 class Closing : public StateNode{
 public:
 	void entry();
-	void exit();
+	void exitState();
 	StateNode* accept(event e);
 };
 

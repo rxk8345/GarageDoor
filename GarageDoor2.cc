@@ -40,7 +40,7 @@ void* ClientThread(void* args){
 	Message replyMessage;
 	sendingMessage.hdr.type = 0 ;
 	sendingMessage.hdr.subtype = 0 ;
-	sendingMessage.triggeredEvent = E;//This is where you send the event that you trigger
+	sendingMessage.triggeredEvent = BP;//This is where you send the event that you trigger
 	int connectionID = name_open( CHANNELNAME, 0 ) ;
 	sleep(1);
 	for(;;){
@@ -66,7 +66,7 @@ protected:
 	DefaultTran defaultTransition;
 };
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[]) {//Compilers are stupid and why
 
 	//**************Polling Thread
 	pthread_t Client;
@@ -82,7 +82,7 @@ int main(int argc, char *argv[]) {
 	long value;
 	replyMessage.hdr.type = 0 ;
 	replyMessage.hdr.subtype = 0 ;
-	replyMessage.triggeredEvent = E;
+	replyMessage.triggeredEvent = BP;
 
 	channel_id = name_attach( NULL, CHANNELNAME, 0 );
 
@@ -93,10 +93,29 @@ int main(int argc, char *argv[]) {
 	//***************Mailbox Main Loop
 
 	std::cout << "Welcome to my Statemachine" << std::endl;
-	StateWalker skyWalker;
-	skyWalker.accept(E);
 
-	for(;;){
+
+	StateWalker skyWalker;//Stopped Opening
+	skyWalker.accept(IR);
+	skyWalker.accept(OC);
+	skyWalker.accept(FO);
+	skyWalker.accept(FC);
+
+	skyWalker.accept(BP);//Opening
+	skyWalker.accept(IR);
+	skyWalker.accept(FC);
+
+	skyWalker.accept(BP);//Stopped Closing
+	skyWalker.accept(IR);
+	skyWalker.accept(FC);
+	skyWalker.accept(FO);
+	skyWalker.accept(OC);
+
+	skyWalker.accept(BP);//Closing
+	skyWalker.accept(FO);
+
+	skyWalker.accept(BP);//Stopped Opening
+	/*for(;;){
 			receiveID = MsgReceive(channel_id->chid, &recievedMessage, sizeof(recievedMessage), NULL);
 		    if (recievedMessage.hdr.type == _IO_CONNECT){
 		    	MsgReply(receiveID, EOK, NULL, 0);
@@ -106,6 +125,8 @@ int main(int argc, char *argv[]) {
 		    	skyWalker.accept(recievedMessage.triggeredEvent);
 
 		    }
-	}
+	}*/
+
+	std::cout << "Made it to the end" << std::endl;
 	return EXIT_SUCCESS;
 }
