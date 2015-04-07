@@ -1,5 +1,6 @@
 #include <cstdlib>
 #include <cstdio>
+#include<stdio.h>
 #include <iostream>
 
 
@@ -18,6 +19,7 @@
 
 #include "State.h"
 #include "Transition.h"
+#include "HAL.h"
 #include "common.h"
 
 //*****************Messaging Code
@@ -63,23 +65,14 @@ void* PollingThread(void* args){
 	int connectionID = name_open( CHANNELNAME, 0 ) ;
 	sleep(1);//ensure that the server channel has been created before we continue
 
-	char inChar;
 	for(;;){
-		std::cin >> inChar;
-		switch(inChar){
-		case 'r' :
-			sendingMessage.triggeredEvent = BP;
-			break;
-		case 'm':
-			sendingMessage.triggeredEvent = OC;
-			break;
-		case 'i':
-			sendingMessage.triggeredEvent = IR;
-			break;
-		}
+		sendingMessage.triggeredEvent = pollInputs();
 
-		MsgSend( connectionID, &sendingMessage, sizeof(sendingMessage), &replyMessage, sizeof(replyMessage) );
+		if(sendingMessage.triggeredEvent != NAE){
+			MsgSend( connectionID, &sendingMessage, sizeof(sendingMessage), &replyMessage, sizeof(replyMessage) );
+		}
 		//send the message to the State Machine Controller
+		usleep(10000);
 	}
 	return 0;
 }
@@ -128,6 +121,7 @@ void* DoorTimerThread(void* args){
 }
 
 int main(int argc, char *argv[]) {
+	setUpHardware();
 
 	//**************Create Polling Thread
 	pthread_t Polling;
@@ -137,11 +131,11 @@ int main(int argc, char *argv[]) {
 	}
 
 	//*************Create Door Timer Thread
-	pthread_t doorTimer;
-	doorTimer = pthread_create(&doorTimer, NULL, DoorTimerThread , NULL);
-	if (doorTimer) {
-		std::cerr << "Error - pthread_create returned error\n" << std::endl;
-	}
+	//pthread_t doorTimer;
+	//doorTimer = pthread_create(&doorTimer, NULL, DoorTimerThread , NULL);
+	//if (doorTimer) {
+	//	std::cerr << "Error - pthread_create returned error\n" << std::endl;
+	//}
 
 	//**************Mailbox Code
 	name_attach_t *channel_id;

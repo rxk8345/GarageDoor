@@ -9,8 +9,8 @@
 #include "common.h"
 #include<iostream>
 
-#include "MotorController.h"
-#include "IRController.h"
+#include "HAL.h"
+//#include "IRController.h"
 
 //***************StoppedOpening**************
 void StoppedOpening::entry(){
